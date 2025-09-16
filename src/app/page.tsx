@@ -9,20 +9,30 @@ import {
   SignUpButton,
   useAuth,
   UserButton,
+  useUser,
 } from "@clerk/nextjs";
 
 import { useEffect, useState } from "react";
 
 export default function LoginPage() {
-  const user = useAuth();
+  const userAuth = useAuth();
+
+  const { user: userLogged } = useUser();
+  const [roles, setRoles] = useState<string[]>();
   const [token, setToken] = useState<string | null>(null);
   useEffect(() => {
     const fetchData = async () => {
-      const token = await user.getToken();
+      const token = await userAuth.getToken();
       setToken(token);
     };
     fetchData();
-  }, [user]);
+  }, [userAuth]);
+
+  useEffect(() => {
+    const { publicMetadata } = userLogged || {};
+    const { roles: rol } = publicMetadata || {};
+    setRoles(rol as string[]);
+  }, [userLogged]);
 
   const [copied, setCopied] = useState(false);
 
@@ -65,7 +75,20 @@ export default function LoginPage() {
             <UserButton />
           </SignedIn>
         </header>
-        <div className="flex justify-end items-center p-4 gap-4 h-16">
+        <div className="flex justify-end items-center p-2 gap-4 h-2">
+          <div>Nombre: {userLogged?.fullName}</div>{" "}
+        </div>
+        <div className="flex justify-end items-center p-2 gap-4 h-2">
+          <div>Roles:</div>
+          <div className="flex">
+            {roles?.map((e: string, i: number) => (
+              <p className="p-1" key={i}>
+                {e}
+              </p>
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-end items-center p-2 gap-4 h-2">
           <Button
             variant="outline"
             size="sm"
@@ -73,29 +96,30 @@ export default function LoginPage() {
             onClick={handleCopy}
           >
             {!copied ? (
-              <span>Copy</span>
+              <span>Copiar Token</span>
             ) : (
               <span className="inline-flex items-center">
                 <svg
-                  className="w-3 h-3 text-white me-1.5"
+                  className="w-3 h-3 text-black me-1.5"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 16 12"
                 >
                   <path
-                    stroke="currentColor"
+                    stroke="black"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
                     d="M1 5.917 5.724 10.5 15 1.5"
                   />
                 </svg>
-                Copied!
+                Copiado!
               </span>
             )}
           </Button>
         </div>
+
         <div className="flex justify-end items-center p-4 gap-4 h-16">
           <label htmlFor="toke-to-copy" className="sr-only">
             Label

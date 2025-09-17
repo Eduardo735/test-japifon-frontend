@@ -76,7 +76,10 @@ export default function LoginPage() {
           </SignedIn>
         </header>
         <div className="flex justify-end items-center p-2 gap-4 h-2">
-          <div>Nombre: {userLogged?.fullName}</div>{" "}
+          <div>Id: {userLogged?.id}</div>
+        </div>
+        <div className="flex justify-end items-center p-2 gap-4 h-2">
+          <div>Nombre: {userLogged?.fullName}</div>
         </div>
         <div className="flex justify-end items-center p-2 gap-4 h-2">
           <div>Roles:</div>
